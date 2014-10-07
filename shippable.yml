@@ -1,0 +1,24 @@
+language: go
+
+go:
+  - 1.2
+
+env:
+  - CI_REPORT=shippable/testresults/junit.xml
+
+build_image: shippableimages/ubuntu1204_go:0.0.1
+
+before_install:
+  - go get github.com/t-yuki/gocover-cobertura
+  - go get github.com/onsi/gomega
+  - go get github.com/onsi/ginkgo
+  - go get code.google.com/p/go.tools/cmd/cover
+
+# Make folders for the reports
+before_script:
+  - mkdir -p shippable/testresults
+  - mkdir -p shippable/codecoverage
+
+script:
+  - go test -coverprofile=coverage.txt -covermode count ./
+  - $GOPATH/bin/gocover-cobertura < coverage.txt > shippable/codecoverage/coverage.xml
